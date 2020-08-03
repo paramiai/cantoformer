@@ -74,6 +74,13 @@ This repository explores LM in **Cantonese (Yue Chinese, 廣東話)**, a langaug
 | Ours          |        ?      |     ?  |
 | [HFL](https://github.com/ymcui/Chinese-ELECTRA)  | 87.5 / 92.5        |   86.9 / 91.8 |
 
+### **ELECTRA-small / EN-MNLI**
+|   ( Acc. )    |      Dev  |
+| ------------- |:------------:|
+| Ours (1M steps)          |     75.9    |
+| Ours (4M steps)          |     77.1    |
+| Google (1M steps)          |     79.7    |
+| Google (4M steps)          |     81.6    |
 
 ## References
 
