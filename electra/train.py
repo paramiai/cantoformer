@@ -374,7 +374,22 @@ def train(rank, args):
 
         # tracker = xm.RateTracker()
     if args.restore_file:
-        model.load_state_dict(torch.load(args.restore_file, map_location=device))
+        states = torch.load(args.restore_file, map_location=device)
+        for k, v in list(states.items()):
+            if k.startswith('module.'):
+                del states[k]
+                k = k[7:]
+                states[k] = v
+            if k.endswith('position_ids'):
+                del states[k]
+                states[k[:-12] + 'position_embeddings'] = v
+        try:
+            model.load_state_dict(states)
+        except Exception as err:
+            import traceback
+            traceback.print_exc()
+            model.load_state_dict(states, strict=False)
+            
         
     model.train()
 
