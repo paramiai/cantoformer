@@ -282,15 +282,6 @@ class ElectraForPreTraining(AlbertPreTrainedModel):
 
         if labels is not None:
             losses = ((self.loss_fct(logits.squeeze(-1), labels.float()) * attention_mask).sum(1) / (1e-6 + attention_mask.sum(1))).sum()
-            '''
-            losses = cross_entropy(
-                logits.view(-1, logits.size(-1)),
-                labels.view(-1),
-                reduction='sum',
-            )'''
-
-            #loss_fct = nn.CrossEntropyLoss()
-            #losses = loss_fct(logits.view(-1, self.config.vocab_size), labels.view(-1))
             output = (losses,) + output
             
 
@@ -416,7 +407,7 @@ def get_model(args):
         num_attention_heads = 4
     elif args.model_size == 'base':
         num_hidden_layers = 12
-        embedding_size = 768
+        embedding_size = 128
         hidden_size = 768
         num_hidden_groups = 1
         intermediate_size = 3072

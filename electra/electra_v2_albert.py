@@ -116,14 +116,15 @@ def _init_weights( module):
 class Config(NamedTuple):
     "Configuration for BERT model"
     vocab_size: int = None # Size of Vocabulary
-    hidden: int = 768 # Dimension of Hidden Layer in Transformer Encoder
-    hidden_ff: int = 768*4 # Dimension of Intermediate Layers in Positionwise Feedforward Net
-    embedding: int = 128 # Factorized embedding parameterization
-    p_drop_hidden: float = 0.1 # finetune dropout
-    n_layers: int = 12 # Numher of Hidden Layers
-    n_heads: int = 768//64 # Numher of Heads in Multi-Headed Attention Layers
+    hidden_size: int = 768 # Dimension of Hidden Layer in Transformer Encoder
+    intermediate_size: int = 768*4 # Dimension of Intermediate Layers in Positionwise Feedforward Net
+    embedding_size: int = 128 # Factorized embedding parameterization
+    classifier_dropout_prob: float = 0.1 # finetune dropout
+    hidden_dropout_prob: float = 0.1 # finetune dropout
+    num_hidden_layers: int = 12 # Numher of Hidden Layers
+    num_attention_heads: int = 768//64 # Numher of Heads in Multi-Headed Attention Layers
     #activ_fn: str = "gelu" # Non-linear Activation Function Type in Hidden Layers
-    max_len: int = 512 # Maximum Length for Positional Embeddings
+    max_position_embeddings: int = 512 # Maximum Length for Positional Embeddings
     n_segments: int = 2 # Number of Sentence Segments
 
     rank: int = 0
@@ -154,7 +155,7 @@ def get_model(args):
         num_attention_heads = 4
     elif args.model_size == 'base':
         num_hidden_layers = 12
-        embedding_size = 768
+        embedding_size = 128
         hidden_size = 768
         intermediate_size = 3072
         num_attention_heads = 12
@@ -164,29 +165,29 @@ def get_model(args):
     
 
     generator_config = Config(
-        max_len=args.seq_length,
+        max_position_embeddings=args.seq_length,
         vocab_size=args.vocab_size,
 
-        n_layers=num_hidden_layers,
-        embedding=embedding_size,
+        num_hidden_layers=num_hidden_layers,
+        embedding_size=embedding_size,
 
-        hidden = hidden_size // args.gen_ratio,
-        hidden_ff = intermediate_size // args.gen_ratio,
-        n_heads=num_attention_heads // args.gen_ratio,
+        hidden_size = hidden_size // args.gen_ratio,
+        intermediate_size = intermediate_size // args.gen_ratio,
+        num_attention_heads=num_attention_heads // args.gen_ratio,
 
         rank=args.rank
     )
 
     discriminator_config = Config(
-        max_len=args.seq_length,
+        max_position_embeddings=args.seq_length,
         vocab_size=args.vocab_size,
 
-        n_layers=num_hidden_layers,
-        embedding=embedding_size,
+        num_hidden_layers=num_hidden_layers,
+        embedding_size=embedding_size,
 
-        hidden=hidden_size,
-        hidden_ff=intermediate_size,
-        n_heads=num_attention_heads,
+        hidden_size=hidden_size,
+        intermediate_size=intermediate_size,
+        num_attention_heads=num_attention_heads,
 
         rank=args.rank
     )
@@ -221,14 +222,14 @@ class Embeddings(nn.Module):
         # self.tok_embed = nn.Embedding(cfg.vocab_size, cfg.hidden) # token embedding
 
         # factorized embedding
-        self.tok_embed1 = nn.Embedding(cfg.vocab_size, cfg.embedding)
-        self.tok_embed2 = nn.Linear(cfg.embedding, cfg.hidden)
+        self.tok_embed1 = nn.Embedding(cfg.vocab_size, cfg.embedding_size)
+        self.tok_embed2 = nn.Linear(cfg.embedding_size, cfg.hidden_size)
 
-        self.pos_embed = nn.Embedding(cfg.max_len, cfg.hidden) # position embedding
+        self.pos_embed = nn.Embedding(cfg.max_position_embeddings, cfg.hidden_size) # position embedding
         # self.seg_embed = nn.Embedding(cfg.n_segments, cfg.hidden) # segment(token type) embedding
 
-        self.norm = LayerNorm(cfg.hidden)
-        # self.drop = nn.Dropout(cfg.p_drop_hidden)
+        self.norm = LayerNorm(cfg.hidden_size)
+        # self.drop = nn.Dropout(cfg.classifier_dropout_prob)
         
         self.pos = None
 
@@ -250,22 +251,22 @@ class MultiHeadedSelfAttention(nn.Module):
     """ Multi-Headed Dot Product Attention """
     def __init__(self, cfg):
         super().__init__()
-        self.proj_q = nn.Linear(cfg.hidden, cfg.hidden)
-        self.proj_k = nn.Linear(cfg.hidden, cfg.hidden)
-        self.proj_v = nn.Linear(cfg.hidden, cfg.hidden)
+        self.proj_q = nn.Linear(cfg.hidden_size, cfg.hidden_size)
+        self.proj_k = nn.Linear(cfg.hidden_size, cfg.hidden_size)
+        self.proj_v = nn.Linear(cfg.hidden_size, cfg.hidden_size)
         # self.drop = nn.Dropout(cfg.p_drop_attn)
         self.scores = None # for visualization
-        self.n_heads = cfg.n_heads
+        self.num_attention_heads = cfg.num_attention_heads
 
     def forward(self, x, mask):
         """
         x, q(query), k(key), v(value) : (B(batch_size), S(seq_len), D(dim))
         mask : (B(batch_size) x S(seq_len))
-        * split D(dim) into (H(n_heads), W(width of head)) ; D = H * W
+        * split D(dim) into (H(num_attention_heads), W(width of head)) ; D = H * W
         """
         # (B, S, D) -proj-> (B, S, D) -split-> (B, S, H, W) -trans-> (B, H, S, W)
         q, k, v = self.proj_q(x), self.proj_k(x), self.proj_v(x)
-        q, k, v = (split_last(x, (self.n_heads, -1)).transpose(1, 2)
+        q, k, v = (split_last(x, (self.num_attention_heads, -1)).transpose(1, 2)
                    for x in [q, k, v])
         # (B, H, S, W) @ (B, H, W, S) -> (B, H, S, S) -softmax-> (B, H, S, S)
         scores = q @ k.transpose(-2, -1) / np.sqrt(k.size(-1))
@@ -286,8 +287,8 @@ class PositionWiseFeedForward(nn.Module):
     """ FeedForward Neural Networks for each position """
     def __init__(self, cfg):
         super().__init__()
-        self.fc1 = nn.Linear(cfg.hidden, cfg.hidden_ff)
-        self.fc2 = nn.Linear(cfg.hidden_ff, cfg.hidden)
+        self.fc1 = nn.Linear(cfg.hidden_size, cfg.intermediate_size)
+        self.fc2 = nn.Linear(cfg.intermediate_size, cfg.hidden_size)
         #self.activ = lambda x: activ_fn(cfg.activ_fn, x)
 
     def forward(self, x):
@@ -300,11 +301,13 @@ class Block(nn.Module):
     def __init__(self, cfg):
         super().__init__()
         self.attn = MultiHeadedSelfAttention(cfg)
-        self.proj = nn.Linear(cfg.hidden, cfg.hidden)
-        self.norm1 = LayerNorm(cfg.hidden)
+        self.proj = nn.Linear(cfg.hidden_size, cfg.hidden_size)
+        self.norm1 = LayerNorm(cfg.hidden_size)
         self.pwff = PositionWiseFeedForward(cfg)
-        self.norm2 = LayerNorm(cfg.hidden)
-        self.drop = nn.Dropout(cfg.p_drop_hidden)
+        self.norm2 = LayerNorm(cfg.hidden_size)
+        if not hasattr(cfg,'hidden_dropout_prob'):
+            setattr(cfg,'hidden_dropout_prob', cfg.classifier_dropout_prob)
+        self.drop = nn.Dropout(cfg.hidden_dropout_prob)
 
         self.config = cfg
 
@@ -322,15 +325,15 @@ class Transformer(nn.Module):
         self.config = cfg
         self.embed = Embeddings(cfg)
         # Original BERT not used parameter-sharing strategies
-        # self.blocks = nn.ModuleList([Block(cfg) for _ in range(cfg.n_layers)])
+        # self.blocks = nn.ModuleList([Block(cfg) for _ in range(cfg.num_hidden_layers)])
 
         # To used parameter-sharing strategies
-        self.n_layers = cfg.n_layers
+        self.num_hidden_layers = cfg.num_hidden_layers
         self.block = Block(cfg)
 
     def forward(self, x, mask):
         h = self.embed(x)
-        for _ in range(self.n_layers):
+        for _ in range(self.num_hidden_layers):
             h = self.block(h, mask)
 
         return h
@@ -341,7 +344,7 @@ class ElectraForMaskedLM(nn.Module):
         self.config = config
 
         self.transformer = Transformer(config)
-        self.dense = nn.Linear(config.hidden, config.vocab_size)
+        self.dense = nn.Linear(config.hidden_size, config.vocab_size)
         self.norm = LayerNorm(config.vocab_size)
         
         # self.loss_fct = nn.CrossEntropyLoss(reduction='none')  # -100 index = padding token
@@ -383,8 +386,8 @@ class ElectraForPreTraining(nn.Module):
 
         self.transformer = Transformer(config)
 
-        self.dense = nn.Linear(config.hidden, config.hidden)
-        self.dense_prediction = nn.Linear(config.hidden, 1)
+        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
+        self.dense_prediction = nn.Linear(config.hidden_size, 1)
 
         self.loss_fct = nn.BCEWithLogitsLoss(reduction='none')
         
@@ -425,7 +428,7 @@ class Electra(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.noise = torch.rand(((args.seq_length, args.vocab_size)))
 
-        self.discriminator_labels = torch.zeros(args.batch_size, args.seq_length, gen_config.hidden, dtype=torch.long)
+        self.discriminator_labels = torch.zeros(args.batch_size, args.seq_length, gen_config.hidden_size, dtype=torch.long)
         
         #self.discriminator.transformer.embed.tok_embed1 = self.generator.transformer.embed.tok_embed1
         

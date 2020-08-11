@@ -196,11 +196,11 @@ def train(rank, args):
     
     train_dataset = get_dataset(args)
 
-    if args.total_num_update < 100:
-        args.total_num_update = len(train_dataset) * args.total_num_update
+    if args.total_num_updates < 100:
+        args.total_num_updates = len(train_dataset) * args.total_num_updates
 
     if args.warmup_updates < 1:
-        args.warmup_updates = int(args.total_num_update * args.warmup_updates)
+        args.warmup_updates = int(args.total_num_updates * args.warmup_updates)
     else:
         args.warmup_updates = int(args.warmup_updates)
     
@@ -373,8 +373,9 @@ def train(rank, args):
         xm.mark_step()
 
         # tracker = xm.RateTracker()
-
-
+    if args.restore_file:
+        model.load_state_dict(torch.load(args.restore_file, map_location=device))
+        
     model.train()
 
     if args.anomaly_detection and rank == 0:
@@ -389,7 +390,7 @@ def train(rank, args):
     scheduler = get_linear_schedule_with_warmup(
         optimizer, 
         num_warmup_steps=args.warmup_updates, 
-        num_training_steps=args.total_num_update, 
+        num_training_steps=args.total_num_updates, 
     )
 
     step_i = 0
@@ -397,13 +398,13 @@ def train(rank, args):
     err = None
     try:
         if rank == 0:
-            pbar = tqdm(total=args.total_num_update)
-        while step_i < args.total_num_update:
+            pbar = tqdm(total=args.total_num_updates)
+        while step_i < args.total_num_updates:
             if not args.gpus:
                 batches = pl.ParallelLoader(train_loader, [device]).per_device_loader(device)
             for sample in batches:
                 step_i += 1
-                if step_i > args.total_num_update:
+                if step_i > args.total_num_updates:
                     break
 
                 report_step = step_i % args.log_interval == 0
@@ -548,6 +549,9 @@ get_dataset
 
 set_parser(parser)
 
+parser.add_argument('--restore-file', default='',
+                    help='pt file to be restored')
+
 parser.add_argument('--eval-dir', default='',
                     help='path to eval data')
 
@@ -561,10 +565,10 @@ parser.add_argument( '--seq-length', type=int,
 parser.add_argument('--warmup-updates', default=10000, type=args_float, 
                     help='warmup the learning rate linearly for the first N updates')
 
-parser.add_argument('--total-num-update', default=1000000, type=int)
-parser.add_argument('--lr', default='0.0005', type=args_float)
-parser.add_argument('--weight-decay', default='0.01', type=args_float)
-parser.add_argument('--lw_lr_decay', default='1', type=args_float, 
+parser.add_argument('--total-num-updates', default=1000000, type=int)
+parser.add_argument('--lr', default=0.0005, type=args_float)
+parser.add_argument('--weight-decay', default=0.01, type=args_float)
+parser.add_argument('--lw-lr-decay', default=1, type=args_float, 
                     help='layer-wise learning rate decay')
 
 parser.add_argument('--tpu', action='store_true', help='use TPU instead of CUDA')

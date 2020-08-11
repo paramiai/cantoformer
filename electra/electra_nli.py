@@ -140,19 +140,15 @@ class textDataset(Dataset):
 
 
 from transformers import get_linear_schedule_with_warmup
-from transformers import ElectraPreTrainedModel, ElectraModel
-from transformers.activations import get_activation
 
-from transformers import ElectraConfig
 
 tokenizer = None
 
 
 from transformers.modeling_bert import BertLayerNorm
 
-from electra_v1 import ElectraForPreTraining
 
-class ElectraNLIPredictions(nn.Module):
+class NLIPredictions(nn.Module):
     def __init__(self, config):
         super().__init__()
 
@@ -168,11 +164,15 @@ class ElectraNLIPredictions(nn.Module):
         
         
 class ElectraNLI(nn.Module):
-    def __init__(self, args, gen_config, dis_config):
+    def __init__(self, args, dis_config):
         super().__init__()
         self.args = args
-        self.discriminator = ElectraForPreTraining(dis_config)
-        self.nli_predictions = ElectraNLIPredictions(config)	
+        import importlib
+        
+        module = importlib.import_module(args.base_model)
+        
+        self.discriminator = module.ElectraForPreTraining(dis_config)
+        self.nli_predictions = NLIPredictions(dis_config)	
         self.loss_fct = nn.CrossEntropyLoss()  # -100 index = padding token
         
     def forward(self, ids, mask, labels=None):
@@ -187,6 +187,8 @@ class ElectraNLI(nn.Module):
         return outputs
 
 
+from transformers import ElectraConfig
+    
     
 def get_model(args):
     if args.model_size == 'debug':
@@ -195,7 +197,6 @@ def get_model(args):
         hidden_size = 16
         intermediate_size = 32
         num_attention_heads = 2
-        args.gen_ratio = 2
 
     elif args.model_size == 'tiny':
         num_hidden_layers = 4
@@ -288,15 +289,10 @@ def get_tokenizer(args):
     return CanTokenizer(vocab_file = args.vocab_file)
 
 def set_parser(parser):
-    parser.add_argument('--restore-file', default='',
-                        help='pt file to be restored')
+    parser.add_argument('--base-model', help='model file to import')
     parser.add_argument('--model-size', default='small',
                         help='model size, '
                                 'e.g., "small", "base", "large" (default: small)')
-    parser.add_argument("--gen-ratio", default=4, type=int,
-                        help="discriminator to generator ratio")
-    parser.add_argument("--disc-weight", default=50, type=int,
-                        help="discriminator loss scalar")
 
     parser.add_argument('--cooked', action='store_true', help='whether data are cooked')
 
