@@ -26,6 +26,7 @@ This repository explores LM in **Cantonese (Yue Chinese, 廣東話)**, a langaug
 
 ## Framework to be used
 
+- `Tensorflow`
 - `Pytorch`
 - `🤗Transformers`
 
@@ -48,15 +49,52 @@ This repository explores LM in **Cantonese (Yue Chinese, 廣東話)**, a langaug
   - Forum Data
 
 
+
+## Something to explore
+
+1. **Sentence Order Prediction (SOP)**
+
+   SOP is a pretraining objective that is used in Albert. StructBERT also introduces Sentence Structural Objective, but since the code for electra reads the data sequentially, this repo explores SOP first
+
+2. **Cluster Objective**
+   
+   [DocProduct](https://github.com/re-search/DocProduct) is a cool project training a BERT model to cluster similar Q&A -- if a text A answers the question Q, then Q and A will be close in vector representation. 
+
+   This means the model must predict the possible contexts (before and after) in order to embed a vector that can minimize the cost function
+
+   Details refer to the [DocProduct](https://github.com/re-search/DocProduct) repo.
+
+
+
+
 ## To Do List
 
-- [x] Apply normalization on Chinese characters
-- [ ] ELECTRA-base + Whole Word Masking Preprocessing **(Working)**
-- [ ] ELECTRA-base + Whole Word Masking Pretraining
-- [ ] Finetuning on EN-MNLI
-- [ ] Compare results to existing benchmarks
-- [ ] Release `canto-mnli` dataset for evaluation
+- [x] Normalize Chinese characters
+- [ ] ELECTRA-small **(Working)**
+- [ ] ELECTRA-small-sop **(Working)**
+- [ ] ELECTRA-small-cluster **(Working)**
+- [ ] ELECTRA-small-sop-cluster **(Working)**
+- [ ] ELECTRA-albert-small **(Working)**
+- [ ] ELECTRA-albert-small-sop **(Working)**
+- [ ] ELECTRA-base
+- [ ] ELECTRA-large
       
+
+## Model Comparison
+
+|     Model     |   params #    |  bs  |  lr  |    L/H    |  MNLI-en  |
+| ------------- | -------------:|:----:|-----:|:---------:|:---------:|
+|    BERT (b)   |      108M     |      |      |  12/256   |   84.4    |
+|    BERT (l)   |      334M     |      |      |  12/256   |   87.1    |
+|  alBERT (b)   |      12M      |      |      |  12/768   |   84.6    |
+|  alBERT (l)   |      18M      |      |      |  24/1024  |   86.5    |
+|  alBERT (xl)  |      60M      |      |      |  24/2048  |   87.9    |
+|  alBERT (xxl) |      235M     |      |      |  12/4096  |   90.6    |
+|  ELECTRA (s)  |      14M      | 128  | 5e-4 |  12/256   |   81.6    |
+|  ELECTRA (b)  |      110M     | 256  | 2e-4 |  12/768   |   88.5    |
+|  ELECTRA (l)  |      335M     | 2048 | 2e-4 |  24/1024  |   90.7    |
+|   XLM-R (b)   |      270M     |      |      |  12/768   |           |
+|   XLM-R (l)   |      550M     |      |      |  24/1024  |   89.0    |
 
 
 ## Benchmarks
