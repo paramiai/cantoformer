@@ -97,6 +97,99 @@ This repository explores LM in **Cantonese (Yue Chinese, 廣東話)**, a langaug
 |   XLM-R (l)   |      550M     |      |      |  24/1024  |   89.0    |
 
 
+
+
+
+## Experiment 1 (electra in en+zh :D)
+
+
+
+|     Model           |   params #    |    L/H    |  MNLI-en<br/>(Acc)  |  DRCD-dev<br/>(EM/F1)  |
+| ------------------- | -------------:|:---------:|:---------:|:-----------:|
+|  bert (b)           |     110M      |  12/256   |           |  85.0/91.2  |
+|  alBERT (b)         |      12M      |  12/768   |   [84.6](https://github.com/google-research/albert)    |             |
+|  ELECTRA (s)        |      14M      |  12/256   |   [81.6](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [84.0/89.5](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd)  |
+|  Ours               |      12M      |  12/768   |   80.5    |  81.8/88.0  |
+
+> So close... Performance in bilingual model does drop. For such a small model, this drop is acceptable (I think :D).
+
+> Models will be uploaded later!
+
+
+#### Small model scripts
+
+
+```bash
+DATA_DIR=$BUCKET/corpus_tf_256_3
+python3 run_pretraining.py \
+  --data-dir $DATA_DIR \
+  --model-name electra_yue_256_small \
+  --hparams '{"model_size":"small","num_train_steps":4000000,"use_tpu":true,"num_tpu_cores":8,"vocab_size":32056,"vocab_file":"cantokenizer-vocab.txt","tpu_name":"node-1","max_seq_length":256,"learning_rate":0.0005,"train_batch_size":128,"save_checkpoints_steps":50000,"iterations_per_loop":1000}'
+
+DATA_DIR=$BUCKET/corpus_tf_256_3
+python3 run_pretraining.py \
+  --data-dir $DATA_DIR \
+  --model-name electra_yue_256_base \
+  --hparams '{"model_size":"base","num_train_steps":4000000,"use_tpu":true,"num_tpu_cores":8,"vocab_size":32056,"vocab_file":"cantokenizer-vocab.txt","tpu_name":"node-1","max_seq_length":256,"learning_rate":0.0002,"train_batch_size":256,"save_checkpoints_steps":50000,"iterations_per_loop":1000}'
+
+##############################
+##
+##  Finetuning scripts
+##
+##############################
+
+DATA_DIR=$BUCKET/corpus_tf_256_3
+FINETUNE_DATA_DIR=$BUCKET/finetuning_data
+GCS_STAT_CACHE_MAX_AGE=0 GCS_READ_CACHE_DISABLED=1 \
+python3 run_finetuning.py \
+  --data-dir $DATA_DIR \
+  --model-name electra_yue_256_small \
+  --hparams '{"model_size": "small","task_names": ["mnli"],"vocab_size":32056,"max_seq_length":256,"vocab_file":"cantokenizer-vocab.txt","use_tpu":true,"num_tpu_cores":8,"tpu_name":"node-a1","train_batch_size":32,"learning_rate":3e-4,"num_train_epochs":3,"weight_decay_rate":0,"layerwise_lr_decay":0.8,"raw_data_dir":"'$FINETUNE_DATA_DIR'"}'
+
+1.15M
+mnli: accuracy: 77.98 - loss: 0.78
+1.70M
+mnli: accuracy: 78.94 - loss: 0.81
+3.00M
+mnli: accuracy: 79.34 - loss: 0.84
+4.0M
+mnli: accuracy: 80.46 - loss: 0.83
+drcd: exact_match: 81.81 - f1: 87.97
+
+
+DATA_DIR=$BUCKET/corpus_tf_256_3
+FINETUNE_DATA_DIR=$BUCKET/finetuning_data
+GCS_STAT_CACHE_MAX_AGE=0 GCS_READ_CACHE_DISABLED=1 \
+python3 run_finetuning.py \
+  --data-dir $DATA_DIR \
+  --model-name electra_yue_256_small \
+  --hparams '{"model_size": "small","task_names": ["mnli","drcd"],"vocab_size":32056,"max_seq_length":256,"vocab_file":"cantokenizer-vocab.txt","use_tpu":true,"num_tpu_cores":8,"tpu_name":"node-a1","train_batch_size":32,"learning_rate":3e-4,"num_train_epochs":3,"weight_decay_rate":0,"layerwise_lr_decay":0.8,"raw_data_dir":"'$FINETUNE_DATA_DIR'"}'
+
+4.0M
+mnli: accuracy: 80.04 - loss: 0.78
+drcd: exact_match: 80.45 - f1: 86.87
+
+```
+
+
+
+#### Base model scripts
+
+```bash
+DATA_DIR=$BUCKET/corpus_tf_256_3
+python3 run_pretraining.py \
+  --data-dir $DATA_DIR \
+  --model-name electra_yue_256_base \
+  --hparams '{"model_size":"base","num_train_steps":4000000,"use_tpu":true,"num_tpu_cores":8,"vocab_size":32056,"vocab_file":"cantokenizer-vocab.txt","tpu_name":"node-1","max_seq_length":256,"learning_rate":0.0002,"train_batch_size":256,"save_checkpoints_steps":50000,"iterations_per_loop":1000}'
+
+##############################
+##
+##  Finetuning scripts
+##
+##############################
+
+```
+
 ## Benchmarks
 
 ### **ELECTRA-base / EN-MNLI**
