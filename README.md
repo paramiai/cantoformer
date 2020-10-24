@@ -176,7 +176,7 @@ Since we have NO datasets in Cantonese, we evaluate the models on **both English
 |🐤|  alBERT (b)   |      12M      |  12/768   |   [84.6](https://github.com/google-research/albert)    |    |   [79.3/82.1](https://github.com/google-research/albert)
 |🐤|  alBERT (l)   |      18M      |  24/1024  |   [86.5](https://github.com/google-research/albert)    |    |   [81.8/84.9](https://github.com/google-research/albert)
 |   |
-|🐤|  ELECTRA (s)  |      14M       |  12/256   |   [81.6](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [79.8/86.7](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) |  [69.7/73.4](https://huggingface.co/mrm8488/electra-small-finetuned-squadv2)🤗
+|🐤|  ELECTRA (s)  |      14M       |  12/256   |   [81.6](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [83.5/89.2](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) |  [69.7/73.4](https://huggingface.co/mrm8488/electra-small-finetuned-squadv2)🤗
 |   |
 |   |   **Ours**    |
 |🐤|  ELECTRA (s)  |      14M       |  12/256   | **80.7**  |  **82.1/88.0**  | **69.4/72.1**
