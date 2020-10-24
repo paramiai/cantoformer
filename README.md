@@ -193,12 +193,12 @@ Since we have NO datasets in Cantonese, we evaluate the models on **both English
 |🐦|  roBERTa (b)  |      110M     |  12/768   |   [87.6](https://github.com/pytorch/fairseq/blob/master/examples/roberta/README.md#results)    | [86.6/92.5](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [78.5/81.7](https://huggingface.co/deepset/roberta-base-squad2)🤗 | [67.4/87.2](https://github.com/ymcui/Chinese-BERT-wwm#%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3cmrc-2018)
 |   |
 |🐦|  ELECTRA (b)  |      110M      |  12/768   |   [88.5](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [89.6/94.2](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [80.5/83.3](https://openreview.net/pdf?id=r1xMH1BtvB) | [69.3/87.0](https://github.com/ymcui/Chinese-ELECTRA#%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3cmrc-2018)
-|
+|  
 |   |   **Ours**    |
 |🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.3**  |  **88.2/92.5** |  **80.4/83.3**
 |   |   **Ours (1.5M)**    |
-|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** |  **67.4/86.7**
-|   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  **70.2/88.5**
+|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7**
+|   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     
 
 
 ---
