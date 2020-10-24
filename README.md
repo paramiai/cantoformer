@@ -154,12 +154,12 @@ Since we have NO datasets in Cantonese, we evaluate the models on **both English
 |🦅|   XLM-R (l)   |      550M     |  24/1024  |   [89.0](https://arxiv.org/abs/1911.02116)    |
 |
 |   |   **Ours (1.2M)**    |
-|🐤|  ELECTRA (s)  |      14M       |  12/256   | **80.7**  |  **82.1/88.0**  | **69.4/72.1**
-|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.3**  |  **88.2/92.5** |  **80.4/83.3**
-|🐦|  albert (xl)  |      60M      |  12/2048   | **87.7**  |  **89.9/94.7** |  **82.9/85.9**
+|🐤|  [ELECTRA (s)](https://drive.google.com/drive/folders/1LdDE6s7bKl_0qVxk5zuOBh8Z0Vg_J2RP)  |      14M       |  12/256   | **80.7**  |  **82.1/88.0**  | **69.4/72.1**
+|🐦|  [ELECTRA (b)](https://drive.google.com/drive/folders/1YH4ORT6dnSsZGSdd3WFB_VDF4iBtycTb)  |      110M      |  12/768   | **86.3**  |  **88.2/92.5** |  **80.4/83.3**
+|🐦|  [albert (xl)](https://drive.google.com/drive/folders/1ASk9uk25XVyiaHmb_epqGiWjzE1JtMFd)  |      60M      |  12/2048   | **87.7**  |  **89.9/94.7** |  **82.9/85.9**
 |
 |   |   **Ours (1.5M)**    |
-|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** |  **67.4/86.7**
+|🐦|  [ELECTRA (b)](https://drive.google.com/drive/folders/1AnjhDoVxk8Wu6qmeV92Vh5pAbmo-NtoJ)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** |  **67.4/86.7**
 |   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  **70.2/88.5**
 |
 
@@ -216,12 +216,12 @@ Electra-albert checkpoints are [here in Google Drive](https://drive.google.com/d
 |   |     Model     |   params #    |    L/H    |  MNLI-en  |  DRCD-dev<br/>(EM/F1)  | SQuADv2-dev<br/>(EM/F1)  |
 |:-:| ------------- | -------------:|:---------:|:---------:|:-----------:|:-----------:|
 |   |   **Ours (1.5M)**    |
-|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** |  **67.4/86.7**
-|   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  **70.2/88.5**
+|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** | 
+|   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  
 |
 |   |   **Ours (1.5M) + SOP**    |
 |🐦|  ELECTRA (b)  |      110M      |  12/768   | **87.1**  |  **88.6/93.6** |  **80.4/83.2** |
-|   |  + *finetuned after SQuAD*  |            |     |          | **89.7/94.1** |     |  **70.2/88.5**
+|   |  + *finetuned after SQuAD*  |            |     |          | **89.7/94.1** |     |
 
 ---
 
