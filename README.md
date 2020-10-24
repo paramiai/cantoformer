@@ -197,8 +197,8 @@ Since we have NO datasets in Cantonese, we evaluate the models on **both English
 |   |   **Ours**    |
 |🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.3**  |  **88.2/92.5** |  **80.4/83.3**
 |   |   **Ours (1.5M)**    |
-|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7**
-|   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     
+|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** |  **67.4/86.7**
+|   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  **70.2/88.5**
 
 
 ---
