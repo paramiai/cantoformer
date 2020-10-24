@@ -37,13 +37,13 @@ We adopt the following preprocessing to the model:<br/>
 
 - WordPiece Tokenizer from [**forked 🤗Tokenizers**](https://github.com/ecchochan/tokenizers/tree/zh-norm-4) which,
 
-  - Strip accents like the original BERT<br/>
+  - strips accents like the original BERT<br/>
     除去[組合附加符號](https://zh.wikipedia.org/zh-hk/%E7%B5%84%E5%90%88%E9%99%84%E5%8A%A0%E7%AC%A6%E8%99%9F) (e.g. `à` → `a`)
 
-  - Lower casing<br/>
+  - uses lower casing<br/>
     使用細階英文
 
-  - Treat symbols/numers as a separate token<br/>
+  - treats symbols/numers as a separate token<br/>
     符號／數字全部當係一個 token
 
   - Simplified Chinese → Traditional Chinese (Since most of our corpus are in Trad. Chinese)<br/>
