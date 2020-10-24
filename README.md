@@ -149,19 +149,19 @@ Since we have NO datasets in Cantonese, we evaluate the models on **both English
 |🐤|  ELECTRA (s)  |      14M       |  12/256   |   [81.6](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [83.5/89.2](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) |  [69.7/73.4](https://huggingface.co/mrm8488/electra-small-finetuned-squadv2)🤗
 |🐦|  ELECTRA (b)  |      110M      |  12/768   |   [88.5](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [89.6/94.2](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [80.5/83.3](https://openreview.net/pdf?id=r1xMH1BtvB) | [69.3/87.0](https://github.com/ymcui/Chinese-ELECTRA#%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3cmrc-2018)
 |🦅|  ELECTRA (l)  |      335M      |  24/1024  |   [90.7](https://openreview.net/pdf?id=r1xMH1BtvB)    | [88.8/93.3](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [88.0/90.6](https://openreview.net/pdf?id=r1xMH1BtvB)
-|
+|  |
 |🐦|   XLM-R (b)   |      270M     |  12/768   |           |
 |🦅|   XLM-R (l)   |      550M     |  24/1024  |   [89.0](https://arxiv.org/abs/1911.02116)    |
-|
+|   |
 |   |   **Ours (1.2M)**    |
 |🐤|  [ELECTRA (s)](https://drive.google.com/drive/folders/1LdDE6s7bKl_0qVxk5zuOBh8Z0Vg_J2RP)  |      14M       |  12/256   | **80.7**  |  **82.1/88.0**  | **69.4/72.1**
 |🐦|  [ELECTRA (b)](https://drive.google.com/drive/folders/1YH4ORT6dnSsZGSdd3WFB_VDF4iBtycTb)  |      110M      |  12/768   | **86.3**  |  **88.2/92.5** |  **80.4/83.3**
 |🐦|  [albert (xl)](https://drive.google.com/drive/folders/1ASk9uk25XVyiaHmb_epqGiWjzE1JtMFd)  |      60M      |  12/2048   | **87.7**  |  **89.9/94.7** |  **82.9/85.9**
-|
+|   |
 |   |   **Ours (1.5M)**    |
 |🐦|  [ELECTRA (b)](https://drive.google.com/drive/folders/1AnjhDoVxk8Wu6qmeV92Vh5pAbmo-NtoJ)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** |  **67.4/86.7**
 |   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  **70.2/88.5**
-|
+|||
 
 ---
 
@@ -177,7 +177,7 @@ Since we have NO datasets in Cantonese, we evaluate the models on **both English
 |🐤|  alBERT (l)   |      18M      |  24/1024  |   [86.5](https://github.com/google-research/albert)    |    |   [81.8/84.9](https://github.com/google-research/albert)
 |   |
 |🐤|  ELECTRA (s)  |      14M       |  12/256   |   [81.6](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [79.8/86.7](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) |  [69.7/73.4](https://huggingface.co/mrm8488/electra-small-finetuned-squadv2)🤗
-|
+|   |
 |   |   **Ours**    |
 |🐤|  ELECTRA (s)  |      14M       |  12/256   | **80.7**  |  **82.1/88.0**  | **69.4/72.1**
 
@@ -193,7 +193,7 @@ Since we have NO datasets in Cantonese, we evaluate the models on **both English
 |🐦|  roBERTa (b)  |      110M     |  12/768   |   [87.6](https://github.com/pytorch/fairseq/blob/master/examples/roberta/README.md#results)    | [86.6/92.5](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [78.5/81.7](https://huggingface.co/deepset/roberta-base-squad2)🤗 | [67.4/87.2](https://github.com/ymcui/Chinese-BERT-wwm#%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3cmrc-2018)
 |   |
 |🐦|  ELECTRA (b)  |      110M      |  12/768   |   [88.5](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [89.6/94.2](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [80.5/83.3](https://openreview.net/pdf?id=r1xMH1BtvB) | [69.3/87.0](https://github.com/ymcui/Chinese-ELECTRA#%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3cmrc-2018)
-|  
+|   |
 |   |   **Ours**    |
 |🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.3**  |  **88.2/92.5** |  **80.4/83.3**
 |   |   **Ours (1.5M)**    |
@@ -218,7 +218,7 @@ Electra-albert checkpoints are [here in Google Drive](https://drive.google.com/d
 |   |   **Ours (1.5M)**    |
 |🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** | 
 |   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  
-|
+|   |
 |   |   **Ours (1.5M) + SOP**    |
 |🐦|  ELECTRA (b)  |      110M      |  12/768   | **87.1**  |  **88.6/93.6** |  **80.4/83.2** |
 |   |  + *finetuned after SQuAD*  |            |     |          | **89.7/94.1** |     |
