@@ -13,44 +13,96 @@ It's good but they are mostly in English due to its abundance of texts available
 
 This repository explores LM in **Cantonese (Yue Chinese, 廣東話)**, a langauge predominantly spoken in Guangzhou, Hong Kong and Macau, and containing very challenging lingual properties for AI to learn.
 
-最近嘅 AI 講到好巴閉咁，又話咩咩 chatbot 可以好似真人咁同人對答，但其實喺呢個「語言處理」嘅領域入面，好多嘅資源都只係得英文，所以要落手做廣東話 NLP，其實唔容易。
+AI 喺呢幾年發展得好快，好多嘢都話用 AI 處理會醒好多，但其實喺「語言處理」嘅領域入面，好多嘅資源都只係得英文，所以要落手做廣東話嘅 NLP，其實唔容易。
 
 所以諗住喺呢度開個 Repo ，鼓勵更多人開發廣東話 AI。
 
-## Challenges
 
-- Mixed Languages (English, Chinese, Yue)
-- Complex Syntax
-- Scarce Resource
-- Many Homonyms & Homophones
+## **Challenges**
 
-## Framework to be used
+- Mixed Languages (English, Chinese, Yue) <br/>
+  夾雜多種語言
+- Complex Syntax <br/>
+  語法複雜
+- Scarce Resource <br/>
+  資源稀少
+- Many Homonyms & Homophones in online texts <br/>
+  網上嘅字通常有好多一語多義／同音異字
+
+
+## **Remediation**
+
+We adopt the following preprocessing to the model:<br/>
+用呢個 model 前我哋會對文字做一啲嘅處理：
+
+- WordPiece Tokenizer from [**forked 🤗Tokenizers**](https://github.com/ecchochan/tokenizers/tree/zh-norm-ok) which,
+
+  - Strip accents like the original BERT<br/>
+    除去[組合附加符號](https://zh.wikipedia.org/zh-hk/%E7%B5%84%E5%90%88%E9%99%84%E5%8A%A0%E7%AC%A6%E8%99%9F) (e.g. `à` → `a`)
+
+  - Lower casing<br/>
+    使用細階英文
+
+  - Treat symbols/numers as a separate token<br/>
+    符號／數字全部當係一個 token
+
+  - Simplified Chinese → Traditional Chinese (Since most of our corpus are in Trad. Chinese)<br/>
+    簡轉繁（因為文本大部分都係繁體字）
+
+    **Using OpenCC**
+
+  - normalizes Unicode Characters (Some are hand-crafted) by<br/>
+    統一中文字符（其中一啲係人手分類）
+    - Symbols of the same functionality 相同功能嘅符號 (e.g. `【` → `[` )
+    - Variant Chinese characters 異體字 (e.g. `俢` → `修` )
+    - Deomposing rare characters 將罕見字拆開 (e.g. `偆` → `亻春` )
+
+    **(Mapping [here](./zh_char2str_mapping.txt))**
+
+- Newlines are regarded as a token, i.e. `<nl>`
+
+
+
+## **Framework to be used**
 
 - `Tensorflow`
 - `Pytorch`
-- `🤗Transformers`
 
-## Libraries to be used
+## **Libraries to be used**
 
-- `🤗Tokenizers`
-- `Jieba`
+- `OpenCC` (Simpl-to-Trad, 簡轉繁) @ v1.1.1
+- `🤗Tokenizers` ([forked version](https://github.com/ecchochan/tokenizers/tree/zh-norm-ok) is used for normalization)
 
-## Data to be used
+```bash
+# Installing OpenCC v1.1.1 by
+sudo bash ./install_opencc.sh
 
-- English
-  - [Wiki](https://dumps.wikimedia.org/)
-  - [BookCorpus](https://github.com/soskek/bookcorpus)
-  - News Articles
-  - Forum Data
+# Installing by forked 🤗 Tokenizers by 
+pip3 install 'git+https://github.com/ecchochan/tokenizers.git@zh-norm-4#egg=version_subpkg&subdirectory=bindings/python'
+# This takes some time!
 
-- Chinese/Cantonese
-  - [Wiki](https://dumps.wikimedia.org/)
-  - News Articles
-  - Forum Data
+# This is forked from tokenizers@v0.8.1
+# with python package renamed to tokenizers_zh
+
+```
+
+## **Corpus**
+
+|    zh    |    en    |
+|:--------:|:--------:|
+| ~ 80 GB<br/>(incl. ~ 20 GB Cantonese)  | ~ 100 GB |
 
 
+## **Evaluation**
 
-## Something to explore
+Since we have NO datasets in Cantonese, we evaluate the models on **both English and Chinese** datasets:
+
+- [**MNLI**](https://cims.nyu.edu/~sbowman/multinli/) (Entailment Prediction)
+- [**DRCD**](https://github.com/DRCSolutionService/DRCD) (Reading Comprehension)
+- [**SQuAD-v2**](https://rajpurkar.github.io/SQuAD-explorer) (Reading Comprehension)
+- [**CMRC2018**](https://github.com/ymcui/cmrc2018) (Reading Comprehension)
+
+## **Something to explore**
 
 1. **Sentence Order Prediction (SOP)**
 
@@ -64,150 +116,123 @@ This repository explores LM in **Cantonese (Yue Chinese, 廣東話)**, a langaug
 
    Details refer to the [DocProduct](https://github.com/re-search/DocProduct) repo.
 
-
-
-
-## To Do List
+## **To Do List**
 
 - [x] Normalize Chinese characters
-- [ ] ELECTRA-small **(Working)**
-- [ ] ELECTRA-small-sop **(Working)**
-- [ ] ELECTRA-small-cluster **(Working)**
-- [ ] ELECTRA-small-sop-cluster **(Working)**
-- [ ] ELECTRA-albert-small **(Working)**
-- [ ] ELECTRA-albert-small-sop **(Working)**
-- [ ] ELECTRA-base
+- [x] ELECTRA-small
+- [x] ELECTRA-base
+- [x] ELECTRA-albert-base
+- [x] ELECTRA-albert-xlarge
+- [ ] ELECTRA-base-cluster
 - [ ] ELECTRA-large
+- [ ] Evaluation in Cantonese dataset
+- [ ] Upload to 🤗Huggingface
       
 
-## Model Comparison
+## **Model Comparisons**
 
-|     Model     |   params #    |  bs  |  lr  |    L/H    |  MNLI-en  |
-| ------------- | -------------:|:----:|-----:|:---------:|:---------:|
-|    BERT (b)   |      108M     |      |      |  12/256   |   84.4    |
-|    BERT (l)   |      334M     |      |      |  12/256   |   87.1    |
-|  alBERT (b)   |      12M      |      |      |  12/768   |   84.6    |
-|  alBERT (l)   |      18M      |      |      |  24/1024  |   86.5    |
-|  alBERT (xl)  |      60M      |      |      |  24/2048  |   87.9    |
-|  alBERT (xxl) |      235M     |      |      |  12/4096  |   90.6    |
-|  ELECTRA (s)  |      14M      | 128  | 5e-4 |  12/256   |   81.6    |
-|  ELECTRA (b)  |      110M     | 256  | 2e-4 |  12/768   |   88.5    |
-|  ELECTRA (l)  |      335M     | 2048 | 2e-4 |  24/1024  |   90.7    |
-|   XLM-R (b)   |      270M     |      |      |  12/768   |           |
-|   XLM-R (l)   |      550M     |      |      |  24/1024  |   89.0    |
-
-
-
-
-
-## Experiment 1 (electra in en+zh :D)
-
-
-
-|     Model           |   params #    |    L/H    |  MNLI-en<br/>(Acc)  |  DRCD-dev<br/>(EM/F1)  |
-| ------------------- | -------------:|:---------:|:---------:|:-----------:|
-|  bert (b)           |     110M      |  12/256   |           |  85.0/91.2  |
-|  alBERT (b)         |      12M      |  12/768   |   [84.6](https://github.com/google-research/albert)    |             |
-|  ELECTRA (s)        |      14M      |  12/256   |   [81.6](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [84.0/89.5](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd)  |
-|  Ours               |      12M      |  12/768   |   80.5    |  81.8/88.0  |
-
-> So close... Performance in bilingual model does drop. For such a small model, this drop is acceptable (I think :D).
-
-> Models will be uploaded later!
+|   |     Model     |   params #    |    L/H    |  MNLI-en  |  DRCD-dev<br/>(EM/F1)  | SQuADv2-dev<br/>(EM/F1)  | CMRC2018-dev<br/>(EM/F1)  |
+|:-:| ------------- | -------------:|:---------:|:---------:|:-----------:|:-----------:|:-----------:|
+|🐤|    BERT (s)   |      12M      |  12/256   |   [77.6](https://github.com/google-research/bert)    |       |   [60.5/64.2](https://huggingface.co/mrm8488/bert-small-finetuned-squadv2)🤗
+|🐦|    BERT (b)   |      110M     |  12/768   |   [84.3](https://github.com/google-research/bert)    |  [85.0/91.2](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd)  | [72.4/75.8](https://huggingface.co/twmkn9/bert-base-uncased-squad2)🤗
+|🦅|    BERT (l)   |      334M     |  12/1024  |   [87.1](https://github.com/google-research/bert)    |  |  [92.8/86.7](https://github.com/google-research/bert)
+|   |
+|🐦|  roBERTa (b)  |      110M     |  12/768   |   [87.6](https://github.com/pytorch/fairseq/blob/master/examples/roberta/README.md#results)    | [86.6/92.5](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [78.5/81.7](https://huggingface.co/deepset/roberta-base-squad2)🤗
+|🦅|  roBERTa (l)  |      335M     |  24/1024  |   [90.2](https://github.com/pytorch/fairseq/blob/master/examples/roberta/README.md#results)    |  |[88.9/94.6](https://github.com/pytorch/fairseq/blob/master/examples/roberta/README.md#results)
+|   |
+|🐤|  alBERT (b)   |      12M      |  12/768   |   [84.6](https://github.com/google-research/albert)    |    |   [79.3/82.1](https://github.com/google-research/albert)
+|🐤|  alBERT (l)   |      18M      |  24/1024  |   [86.5](https://github.com/google-research/albert)    |    |   [81.8/84.9](https://github.com/google-research/albert)
+|🐦|  alBERT (xl)  |      60M      |  24/2048  |   [87.9](https://github.com/google-research/albert)    |    |   [84.1/87.9](https://github.com/google-research/albert)
+|🦅|  alBERT (xxl) |      235M     |  12/4096  |   [90.6](https://github.com/google-research/albert)    |    |   [86.9/89.8](https://github.com/google-research/albert)
+|   |
+|🐤|  ELECTRA (s)  |      14M       |  12/256   |   [81.6](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [83.5/89.2](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) |  [69.7/73.4](https://huggingface.co/mrm8488/electra-small-finetuned-squadv2)🤗
+|🐦|  ELECTRA (b)  |      110M      |  12/768   |   [88.5](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [89.6/94.2](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [80.5/83.3](https://openreview.net/pdf?id=r1xMH1BtvB) | [69.3/87.0](https://github.com/ymcui/Chinese-ELECTRA#%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3cmrc-2018)
+|🦅|  ELECTRA (l)  |      335M      |  24/1024  |   [90.7](https://openreview.net/pdf?id=r1xMH1BtvB)    | [88.8/93.3](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [88.0/90.6](https://openreview.net/pdf?id=r1xMH1BtvB)
+|
+|🐦|   XLM-R (b)   |      270M     |  12/768   |           |
+|🦅|   XLM-R (l)   |      550M     |  24/1024  |   [89.0](https://arxiv.org/abs/1911.02116)    |
+|
+|   |   **Ours (1.2M)**    |
+|🐤|  ELECTRA (s)  |      14M       |  12/256   | **80.7**  |  **82.1/88.0**  | **69.4/72.1**
+|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.3**  |  **88.2/92.5** |  **80.4/83.3**
+|🐦|  albert (xl)  |      60M      |  12/2048   | **87.7**  |  **89.9/94.7** |  **82.9/85.9**
+|
+|   |   **Ours (1.5M)**    |
+|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** |  **67.4/86.7**
+|   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  **70.2/88.5**
+|
 
 
-#### Small model scripts
+---
+
+## **Individual Comparisions**
+
+### **Small Models 🐤**
+
+|   |     Model     |   params #    |    L/H    |  MNLI-en  |  DRCD-dev<br/>(EM/F1)  | SQuADv2-dev<br/>(EM/F1)  |
+|:-:| ------------- | -------------:|:---------:|:---------:|:-----------:|:-----------:|
+|🐤|    BERT (s)   |      12M      |  12/256   |   [77.6](https://github.com/google-research/bert)    |       |   [60.5/64.2](https://huggingface.co/mrm8488/bert-small-finetuned-squadv2)🤗
+|   |
+|🐤|  alBERT (b)   |      12M      |  12/768   |   [84.6](https://github.com/google-research/albert)    |    |   [79.3/82.1](https://github.com/google-research/albert)
+|🐤|  alBERT (l)   |      18M      |  24/1024  |   [86.5](https://github.com/google-research/albert)    |    |   [81.8/84.9](https://github.com/google-research/albert)
+|   |
+|🐤|  ELECTRA (s)  |      14M       |  12/256   |   [81.6](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [79.8/86.7](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) |  [69.7/73.4](https://huggingface.co/mrm8488/electra-small-finetuned-squadv2)🤗
+|
+|   |   **Ours**    |
+|🐤|  ELECTRA (s)  |      14M       |  12/256   | **80.7**  |  **82.1/88.0**  | **69.4/72.1**
 
 
-```bash
-DATA_DIR=$BUCKET/corpus_tf_256_3
-python3 run_pretraining.py \
-  --data-dir $DATA_DIR \
-  --model-name electra_yue_256_small \
-  --hparams '{"model_size":"small","num_train_steps":4000000,"use_tpu":true,"num_tpu_cores":8,"vocab_size":32056,"vocab_file":"cantokenizer-vocab.txt","tpu_name":"node-1","max_seq_length":256,"learning_rate":0.0005,"train_batch_size":128,"save_checkpoints_steps":50000,"iterations_per_loop":1000}'
+---
 
-DATA_DIR=$BUCKET/corpus_tf_256_3
-python3 run_pretraining.py \
-  --data-dir $DATA_DIR \
-  --model-name electra_yue_256_base \
-  --hparams '{"model_size":"base","num_train_steps":4000000,"use_tpu":true,"num_tpu_cores":8,"vocab_size":32056,"vocab_file":"cantokenizer-vocab.txt","tpu_name":"node-1","max_seq_length":256,"learning_rate":0.0002,"train_batch_size":256,"save_checkpoints_steps":50000,"iterations_per_loop":1000}'
+### **Base Models 🐦**
 
-##############################
-##
-##  Finetuning scripts
-##
-##############################
-
-DATA_DIR=$BUCKET/corpus_tf_256_3
-FINETUNE_DATA_DIR=$BUCKET/finetuning_data
-GCS_STAT_CACHE_MAX_AGE=0 GCS_READ_CACHE_DISABLED=1 \
-python3 run_finetuning.py \
-  --data-dir $DATA_DIR \
-  --model-name electra_yue_256_small \
-  --hparams '{"model_size": "small","task_names": ["mnli"],"vocab_size":32056,"max_seq_length":256,"vocab_file":"cantokenizer-vocab.txt","use_tpu":true,"num_tpu_cores":8,"tpu_name":"node-a1","train_batch_size":32,"learning_rate":3e-4,"num_train_epochs":3,"weight_decay_rate":0,"layerwise_lr_decay":0.8,"raw_data_dir":"'$FINETUNE_DATA_DIR'"}'
-
-1.15M
-mnli: accuracy: 77.98 - loss: 0.78
-1.70M
-mnli: accuracy: 78.94 - loss: 0.81
-3.00M
-mnli: accuracy: 79.34 - loss: 0.84
-4.0M
-mnli: accuracy: 80.46 - loss: 0.83
-drcd: exact_match: 81.81 - f1: 87.97
+|   |     Model     |   params #    |    L/H    |  MNLI-en  |  DRCD-dev<br/>(EM/F1)  | SQuADv2-dev<br/>(EM/F1)  | CMRC2018-dev<br/>(EM/F1)  |
+|:-:| ------------- | -------------:|:---------:|:---------:|:-----------:|:-----------:|:-----------:|
+|🐦|    BERT (b)   |      110M     |  12/768   |   [84.3](https://github.com/google-research/bert)    |  [85.0/91.2](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd)  | [72.4/75.8](https://huggingface.co/twmkn9/bert-base-uncased-squad2)🤗
+|   |
+|🐦|  roBERTa (b)  |      110M     |  12/768   |   [87.6](https://github.com/pytorch/fairseq/blob/master/examples/roberta/README.md#results)    | [86.6/92.5](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [78.5/81.7](https://huggingface.co/deepset/roberta-base-squad2)🤗 | [67.4/87.2](https://github.com/ymcui/Chinese-BERT-wwm#%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3cmrc-2018)
+|   |
+|🐦|  ELECTRA (b)  |      110M      |  12/768   |   [88.5](https://openreview.net/pdf?id=r1xMH1BtvB)    |  [89.6/94.2](https://github.com/ymcui/Chinese-ELECTRA#%E7%B9%81%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3drcd) | [80.5/83.3](https://openreview.net/pdf?id=r1xMH1BtvB) | [69.3/87.0](https://github.com/ymcui/Chinese-ELECTRA#%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3cmrc-2018)
+|
+|   |   **Ours**    |
+|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.3**  |  **88.2/92.5** |  **80.4/83.3**
+|   |   **Ours (1.5M)**    |
+|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** |  **67.4/86.7**
+|   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  **70.2/88.5**
 
 
-DATA_DIR=$BUCKET/corpus_tf_256_3
-FINETUNE_DATA_DIR=$BUCKET/finetuning_data
-GCS_STAT_CACHE_MAX_AGE=0 GCS_READ_CACHE_DISABLED=1 \
-python3 run_finetuning.py \
-  --data-dir $DATA_DIR \
-  --model-name electra_yue_256_small \
-  --hparams '{"model_size": "small","task_names": ["mnli","drcd"],"vocab_size":32056,"max_seq_length":256,"vocab_file":"cantokenizer-vocab.txt","use_tpu":true,"num_tpu_cores":8,"tpu_name":"node-a1","train_batch_size":32,"learning_rate":3e-4,"num_train_epochs":3,"weight_decay_rate":0,"layerwise_lr_decay":0.8,"raw_data_dir":"'$FINETUNE_DATA_DIR'"}'
+---
 
-4.0M
-mnli: accuracy: 80.04 - loss: 0.78
-drcd: exact_match: 80.45 - f1: 86.87
+## **Downloads 🐤🐦**
 
-```
+Electra checkpoints are put [here in Google Drive](https://drive.google.com/drive/folders/1FGu_2C5nQ2HVk6wn33w7PUp6JmlVR1cC).
 
+Electra-albert checkpoints are [here in Google Drive](https://drive.google.com/drive/folders/1_UgF8LlmO9GSdkk_R9d29_qebx1sDoHi)
 
+---
 
-#### Base model scripts
+## **Explorations**
 
-```bash
-DATA_DIR=$BUCKET/corpus_tf_256_3
-python3 run_pretraining.py \
-  --data-dir $DATA_DIR \
-  --model-name electra_yue_256_base \
-  --hparams '{"model_size":"base","num_train_steps":4000000,"use_tpu":true,"num_tpu_cores":8,"vocab_size":32056,"vocab_file":"cantokenizer-vocab.txt","tpu_name":"node-1","max_seq_length":256,"learning_rate":0.0002,"train_batch_size":256,"save_checkpoints_steps":50000,"iterations_per_loop":1000}'
+|   |     Model     |   params #    |    L/H    |  MNLI-en  |  DRCD-dev<br/>(EM/F1)  | SQuADv2-dev<br/>(EM/F1)  |
+|:-:| ------------- | -------------:|:---------:|:---------:|:-----------:|:-----------:|
+|   |   **Ours (1.5M)**    |
+|🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** |  **67.4/86.7**
+|   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  **70.2/88.5**
+|
+|   |   **Ours (1.5M) + SOP**    |
+|🐦|  ELECTRA (b)  |      110M      |  12/768   | **87.1**  |  **88.6/93.6** |  **80.4/83.2** |
+|   |  + *finetuned after SQuAD*  |            |     |          | **89.7/94.1** |     |  **70.2/88.5**
 
-##############################
-##
-##  Finetuning scripts
-##
-##############################
+---
 
-```
-
-## Benchmarks
-
-### **ELECTRA-base / EN-MNLI**
-|   ( Acc. )    |      Dev  |
-| ------------- |:------------:|
-| Ours          |     ?    |
-| [Google](https://github.com/google-research/electra)  | 88.8 |
-
-
-### **ELECTRA-base / DRCD**
-|   ( EM / F1 )    |      Dev      |  Test  |
-| ------------- |:-------------:|:------:|
-| Ours          |        ?      |     ?  |
-| [HFL](https://github.com/ymcui/Chinese-ELECTRA)  | 87.5 / 92.5        |   86.9 / 91.8 |
-
-
-## References
+## **References**
 
 ### Expected Losses / Training Curves during Pre-Training.
 
 https://github.com/google-research/electra/issues/3
+
+---
+
+## **Credits**
+
+Special thanks to **Google's TensorFlow Research Cloud (TFRC)** for providing TPU-v3 for all the training in this repo!
