@@ -35,7 +35,7 @@ AI 喺呢幾年發展得好快，好多嘢都話用 AI 處理會醒好多，但�
 We adopt the following preprocessing to the model:<br/>
 用呢個 model 前我哋會對文字做一啲嘅處理：
 
-- WordPiece Tokenizer from [**forked 🤗Tokenizers**](https://github.com/ecchochan/tokenizers/tree/zh-norm-ok) which,
+- WordPiece Tokenizer from [**forked 🤗Tokenizers**](https://github.com/ecchochan/tokenizers/tree/zh-norm-4) which,
 
   - Strip accents like the original BERT<br/>
     除去[組合附加符號](https://zh.wikipedia.org/zh-hk/%E7%B5%84%E5%90%88%E9%99%84%E5%8A%A0%E7%AC%A6%E8%99%9F) (e.g. `à` → `a`)
@@ -49,7 +49,7 @@ We adopt the following preprocessing to the model:<br/>
   - Simplified Chinese → Traditional Chinese (Since most of our corpus are in Trad. Chinese)<br/>
     簡轉繁（因為文本大部分都係繁體字）
 
-    **Using OpenCC**
+    **Using OpenCC v1.1.1 from [here](https://github.com/BYVoid/OpenCC.git)**
 
   - normalizes Unicode Characters (Some are hand-crafted) by<br/>
     統一中文字符（其中一啲係人手分類）
@@ -71,7 +71,7 @@ We adopt the following preprocessing to the model:<br/>
 ## **Libraries to be used**
 
 - `OpenCC` (Simpl-to-Trad, 簡轉繁) @ v1.1.1
-- `🤗Tokenizers` ([forked version](https://github.com/ecchochan/tokenizers/tree/zh-norm-ok) is used for normalization)
+- `🤗Tokenizers` ([forked version](https://github.com/ecchochan/tokenizers/tree/zh-norm-4) is used for normalization)
 
 ```bash
 # Installing OpenCC v1.1.1 by
@@ -121,6 +121,7 @@ Since we have NO datasets in Cantonese, we evaluate the models on **both English
 - [x] Normalize Chinese characters
 - [x] ELECTRA-small
 - [x] ELECTRA-base
+- [x] ELECTRA-base-sop
 - [x] ELECTRA-albert-base
 - [x] ELECTRA-albert-xlarge
 - [ ] ELECTRA-base-cluster
@@ -161,7 +162,6 @@ Since we have NO datasets in Cantonese, we evaluate the models on **both English
 |🐦|  ELECTRA (b)  |      110M      |  12/768   | **86.8**  |  **88.5/93.3** |  **80.8/83.7** |  **67.4/86.7**
 |   |  + *finetuned after SQuAD*  |            |     |          | **89.5/94.1** |     |  **70.2/88.5**
 |
-
 
 ---
 
